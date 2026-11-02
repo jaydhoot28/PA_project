@@ -1,4 +1,4 @@
-
+import json
 from pathlib import Path
 
 import joblib
@@ -274,6 +274,7 @@ cv_scoring = {
     "precision": "precision",
     "recall": "recall",
     "f1": "f1",
+    "f1_macro": "f1_macro",
     "roc_auc": "roc_auc",
 }
 
@@ -351,6 +352,15 @@ for model_name, classifier in model_specs:
         "F1": f1_score(
             y_test, y_pred, pos_label=1, zero_division=0
         ),
+        "F1_Rejected": f1_score(
+            y_test, y_pred, pos_label=0, zero_division=0
+        ),
+        "F1_Macro": f1_score(
+            y_test, y_pred, average="macro", zero_division=0
+        ),
+        "F1_Weighted": f1_score(
+            y_test, y_pred, average="weighted", zero_division=0
+        ),
         "ROC_AUC": roc_auc_score(y_test, y_probability),
     }
 
@@ -419,6 +429,41 @@ print(cv_table.round(4).to_string(index=False))
 
 print("\n--- Held-out test results ---")
 print(test_table.round(4).to_string(index=False))
+
+
+# --------------------------------------------------
+# 10b. Show F1 scores (table, bar chart, dashboard data)
+# --------------------------------------------------
+
+f1_table = test_table[
+    ["Model", "F1", "F1_Rejected", "F1_Macro", "F1_Weighted"]
+].rename(columns={"F1": "F1_Approved"})
+
+print("\n--- F1 scores on held-out test set ---")
+print(f1_table.round(4).to_string(index=False))
+
+# Bar chart of F1 scores
+f1_plot = f1_table.set_index("Model")[
+    ["F1_Approved", "F1_Rejected", "F1_Macro"]
+]
+ax = f1_plot.plot(kind="bar", figsize=(8, 5), ylim=(0, 1.05))
+ax.set_ylabel("F1 score")
+ax.set_title("F1 Score Comparison (Test Set)")
+ax.legend(loc="lower right")
+plt.xticks(rotation=0)
+for container in ax.containers:
+    ax.bar_label(container, fmt="%.3f", fontsize=8, padding=2)
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / "f1_score_comparison.png", dpi=150)
+plt.close()
+
+# Data file for the frontend (results.js works when opened directly)
+results_payload = {
+    "test": test_table.round(4).to_dict(orient="records"),
+    "cv": cv_table.round(4).to_dict(orient="records"),
+}
+with open(OUTPUT_DIR / "results.js", "w") as f:
+    f.write("const RESULTS = " + json.dumps(results_payload, indent=2) + ";\n")
 
 
 # --------------------------------------------------

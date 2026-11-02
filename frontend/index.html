@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loan Approval – F1 Score Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Loan Approval Models</h1>
+    <p>F1 score comparison on the held-out test set</p>
+  </header>
+
+  <main>
+    <section class="card winner" id="winner"></section>
+
+    <section class="card">
+      <h2>F1 scores by model</h2>
+      <div class="legend">
+        <span class="a">Approved</span><span class="r">Rejected</span><span class="m">Macro avg</span>
+      </div>
+      <div id="bars"></div>
+    </section>
+
+    <section class="card">
+      <h2>All test metrics</h2>
+      <div class="table-wrap"><table id="table"></table></div>
+    </section>
+
+    <section class="card">
+      <h2>F1 chart (from train_models.py)</h2>
+      <img src="../outputs/f1_score_comparison.png" alt="F1 score comparison chart">
+    </section>
+  </main>
+
+  <footer>Run <code>python train_models.py</code> to refresh these numbers.</footer>
+
+  <script src="../outputs/results.js"></script>
+  <script>
+    const rows = RESULTS.test;                       // already sorted by F1
+    const pct = v => (v * 100).toFixed(2) + "%";
+
+    // Winner card
+    const best = rows[0];
+    document.getElementById("winner").innerHTML =
+      `<div><small>Best model by test F1 (Approved)</small><strong>${best.Model}</strong></div>
+       <div class="big">${best.F1.toFixed(4)}</div>`;
+
+    // Bars
+    const bars = document.getElementById("bars");
+    rows.forEach(r => {
+      const line = (cls, label, v) =>
+        `<div class="bar-line"><span class="label">${label}</span>
+         <div class="track"><div class="fill ${cls}" data-w="${v * 100}"></div></div>
+         <span class="val">${v.toFixed(3)}</span></div>`;
+      bars.insertAdjacentHTML("beforeend",
+        `<div class="f1-row"><div class="name">${r.Model}</div>
+          ${line("a", "Approved", r.F1)}
+          ${line("r", "Rejected", r.F1_Rejected)}
+          ${line("m", "Macro", r.F1_Macro)}</div>`);
+    });
+    requestAnimationFrame(() => setTimeout(() =>
+      document.querySelectorAll(".fill").forEach(f => f.style.width = f.dataset.w + "%"), 50));
+
+    // Table
+    const cols = ["Model","Accuracy","Precision","Recall","F1","F1_Rejected","F1_Macro","F1_Weighted","ROC_AUC"];
+    document.getElementById("table").innerHTML =
+      "<tr>" + cols.map(c => `<th>${c.replace("_"," ")}</th>`).join("") + "</tr>" +
+      rows.map((r, i) => `<tr class="${i === 0 ? "best" : ""}">` +
+        cols.map(c => `<td>${c === "Model" ? r[c] : pct(r[c])}</td>`).join("") + "</tr>").join("");
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+:root{
+  --bg:#0f1220; --card:#181c30; --text:#e8eaf6; --muted:#9aa1c4;
+  --accent:#6c8cff; --accent2:#3ddc97; --accent3:#ffb347; --border:#2a3050;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+header{padding:2.5rem 1.5rem 1rem;text-align:center}
+header h1{font-size:clamp(1.6rem,4vw,2.4rem)}
+header p{color:var(--muted);margin-top:.4rem}
+main{max-width:1000px;margin:0 auto;padding:1rem 1.5rem 3rem;display:grid;gap:1.5rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem}
+.card h2{font-size:1.1rem;margin-bottom:1rem}
+.winner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+  background:linear-gradient(135deg,#243066,#1b5e4a)}
+.winner .big{font-size:2.6rem;font-weight:700}
+.winner small{color:var(--muted);display:block}
+.f1-row{margin-bottom:1.1rem}
+.f1-row .name{font-weight:600;margin-bottom:.35rem}
+.bar-line{display:flex;align-items:center;gap:.6rem;margin:.25rem 0;font-size:.85rem}
+.bar-line .label{width:90px;color:var(--muted)}
+.track{flex:1;height:12px;background:#0d1020;border-radius:99px;overflow:hidden}
+.fill{height:100%;border-radius:99px;width:0;transition:width 1s ease}
+.fill.a{background:var(--accent)} .fill.r{background:var(--accent3)} .fill.m{background:var(--accent2)}
+.bar-line .val{width:55px;text-align:right;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:1rem;font-size:.8rem;color:var(--muted);margin-bottom:1rem;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.35rem}
+.legend .a::before{background:var(--accent)} .legend .r::before{background:var(--accent3)} .legend .m::before{background:var(--accent2)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:.6rem .7rem;text-align:right;border-bottom:1px solid var(--border)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600}
+tr.best td{color:var(--accent2);font-weight:600}
+.table-wrap{overflow-x:auto}
+img{width:100%;border-radius:10px;background:#fff}
+footer{text-align:center;color:var(--muted);padding-bottom:2rem;font-size:.8rem}
